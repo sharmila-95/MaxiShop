@@ -1,10 +1,14 @@
-﻿using Maxi.Application.DTO.Category;
+﻿using Maxi.Application.Common;
+using Maxi.Application.DTO.Category;
 using Maxi.Application.Services.Interface;
 using Maxi.Domain;
 using Maxi.Domain.Contracts;
 using Maxi.Infrastructure.DbContexts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System.Net;
 
 namespace Maxiweb.Controllers
 {
@@ -14,18 +18,35 @@ namespace Maxiweb.Controllers
     {
         private readonly ICategoryService _categoryService;
 
+        protected APIResponse _apiResponse;
+        
         public CategoryController(ICategoryService categoryService)
         {
             _categoryService=categoryService;
+            _apiResponse = new APIResponse();
+        
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<ActionResult<APIResponse>> Get()
         {
+            try
+            {
+                var data = await _categoryService.GetAllAsync();
 
-            var data = await _categoryService.GetAllAsync();
-            return Ok(data);
+                _apiResponse.StatusCode = HttpStatusCode.OK;
+                _apiResponse.Result = data;
+            }
+            catch (Exception ex)
+            {
+                _apiResponse.AddError(ex.Message.ToString());
+                throw;
+            }
+
+           
+
+            return (_apiResponse);
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]

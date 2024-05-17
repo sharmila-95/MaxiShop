@@ -1,32 +1,27 @@
 ﻿using Maxi.Application.ApplicationConstants;
 using Maxi.Application.Common;
-using Maxi.Application.DTO.Category;
+using Maxi.Application.DTO.Brand;
 using Maxi.Application.Services.Interface;
-using Maxi.Domain;
-using Maxi.Domain.Contracts;
-using Maxi.Infrastructure.DbContexts;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Net;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Maxiweb.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CategoryController : ControllerBase
+    public class BrandController : ControllerBase
     {
-        private readonly ICategoryService _categoryService;
 
+        private readonly IBrandService _brandService;
         protected APIResponse _apiResponse;
-        
-        public CategoryController(ICategoryService categoryService)
+
+        public BrandController(IBrandService brandService)
         {
-            _categoryService=categoryService;
+            _brandService = brandService;
             _apiResponse = new APIResponse();
-        
+
         }
 
         [HttpGet]
@@ -34,7 +29,7 @@ namespace Maxiweb.Controllers
         {
             try
             {
-                var data = await _categoryService.GetAllAsync();
+                var data = await _brandService.GetAllAsync();
 
                 _apiResponse.StatusCode = HttpStatusCode.OK;
                 _apiResponse.IsSuccess = true;
@@ -43,28 +38,28 @@ namespace Maxiweb.Controllers
             }
             catch (Exception)
             {
-                _apiResponse.StatusCode=HttpStatusCode.InternalServerError;
+                _apiResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _apiResponse.AddError(CommonMessage.SystemErr);
-                
+
             }
 
-           
+
 
             return Ok(_apiResponse);
         }
-  
+
         [HttpGet]
         [Route("details")]
-        public async Task<ActionResult<APIResponse>> Get(int id) 
+        public async Task<ActionResult<APIResponse>> Get(int id)
         {
             try
             {
-                var mydata = await _categoryService.GetByIdAsync(id);
+                var mydata = await _brandService.GetByIdAsync(id);
 
                 if (mydata == null)
                 {
-                    _apiResponse.StatusCode=HttpStatusCode.NotFound ;
-                    _apiResponse.DisplayMessage=CommonMessage.CreateOperationFailed;
+                    _apiResponse.StatusCode = HttpStatusCode.NotFound;
+                    _apiResponse.DisplayMessage = CommonMessage.CreateOperationFailed;
                     return NotFound();
                 }
                 _apiResponse.StatusCode = HttpStatusCode.OK;
@@ -80,27 +75,27 @@ namespace Maxiweb.Controllers
 
             }
 
-            return Ok(_apiResponse) ;
+            return Ok(_apiResponse);
         }
 
 
 
         [HttpPost]
-        public async Task<ActionResult<APIResponse>> Create([FromBody]CreateCategoryDto obj)
+        public async Task<ActionResult<APIResponse>> Create([FromBody] CreateBrandDto obj)
         {
             try
             {
                 if (!ModelState.IsValid)
                 {
-                   _apiResponse.StatusCode=HttpStatusCode.BadRequest ;
+                    _apiResponse.StatusCode = HttpStatusCode.BadRequest;
                     _apiResponse.AddError(ModelState.ToString());
                 }
 
-               var data = await _categoryService.CreateAsync(obj);
-                _apiResponse.StatusCode=HttpStatusCode.Created;
-                _apiResponse.DisplayMessage= CommonMessage.CreateOperationSuccess;
-                _apiResponse.IsSuccess=true;
-                _apiResponse.Result=data;   
+                var data = await _brandService.CreateAsync(obj);
+                _apiResponse.StatusCode = HttpStatusCode.Created;
+                _apiResponse.DisplayMessage = CommonMessage.CreateOperationSuccess;
+                _apiResponse.IsSuccess = true;
+                _apiResponse.Result = data;
             }
             catch (Exception)
             {
@@ -113,7 +108,7 @@ namespace Maxiweb.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult<APIResponse>> Update([FromBody]UpdateCategoryDto obj)
+        public async Task<ActionResult<APIResponse>> Update([FromBody] UpdateBrandDto obj)
         {
             try
             {
@@ -123,7 +118,7 @@ namespace Maxiweb.Controllers
                     _apiResponse.DisplayMessage = CommonMessage.UpdateOperationFailed;
                     _apiResponse.AddError(ModelState.ToString());
                 }
-                 await _categoryService.UpdateAsync(obj);
+                await _brandService.UpdateAsync(obj);
                 _apiResponse.StatusCode = HttpStatusCode.NoContent;
                 _apiResponse.IsSuccess = true;
                 _apiResponse.DisplayMessage = CommonMessage.UpdateOperationSuccess;
@@ -140,8 +135,8 @@ namespace Maxiweb.Controllers
             }
 
             return Ok(_apiResponse);
-          
-           
+
+
 
         }
 
@@ -158,14 +153,14 @@ namespace Maxiweb.Controllers
                     _apiResponse.AddError(ModelState.ToString());
                 }
 
-                var record = await _categoryService.GetByIdAsync(id);
+                var record = await _brandService.GetByIdAsync(id);
                 if (record == null)
                 {
                     _apiResponse.StatusCode = HttpStatusCode.BadRequest;
                     _apiResponse.DisplayMessage = CommonMessage.DeleteOperationFailed;
                     _apiResponse.AddError(ModelState.ToString());
                 }
-                await _categoryService.DeleteAsync(id);
+                await _brandService.DeleteAsync(id);
                 _apiResponse.StatusCode = HttpStatusCode.NoContent;
                 _apiResponse.IsSuccess = true;
                 _apiResponse.DisplayMessage = CommonMessage.deleteOperationSuccess;

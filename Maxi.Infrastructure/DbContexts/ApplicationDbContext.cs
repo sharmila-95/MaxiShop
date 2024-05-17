@@ -16,5 +16,7 @@ namespace Maxi.Infrastructure.DbContexts
         }
 
         public DbSet<Category> categories { get; set; }
+
+        public DbSet<Brand> brands { get; set; }
     }
 }

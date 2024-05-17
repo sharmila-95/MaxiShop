@@ -3,6 +3,7 @@ using Maxi.Infrastructure;
 using Maxi.Application;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Maxi.Infrastructure.Common;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,7 +29,36 @@ builder.Services.AddCors(Options=>
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer
 (builder.Configuration.GetConnectionString("DefaultConnection")));
 
+//updata database async
+
+static async void UpdateDatabaseAsync(IHost host)
+{
+    using(var scope=host.Services.CreateScope())
+    {
+        var Services=scope.ServiceProvider;
+
+        try
+        {
+            var context = Services.GetRequiredService<ApplicationDbContext>();
+
+            if(context.Database.IsSqlServer()) 
+            {
+                context.Database.Migrate();
+            }
+
+            await SeedData.SeedDataAsync(context);
+        }
+        catch (Exception ex)
+        {
+            var logger=scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+            logger.LogError(ex, "Error occoured");
+            
+        }
+    }
+}
+
 var app = builder.Build();
+UpdateDatabaseAsync(app);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

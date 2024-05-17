@@ -1,17 +1,18 @@
-﻿using System;
+﻿using Maxi.Domain.Common;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Maxi.Application.DTO.Category
+namespace Maxi.Domain
 {
-    public class UpdateCategoryDto
+    public class Brand:BaseModel
     {
         [Required]
-        public int id { get; set; }
+        public string name {  get; set; }
         [Required]
-        public string name { get; set; }
+        public DateTime EstablishYear { get; set; }
     }
 }

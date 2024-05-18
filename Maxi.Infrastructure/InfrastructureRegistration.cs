@@ -16,6 +16,7 @@ namespace Maxi.Infrastructure
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<ICategoryRepository,CategoryRepository>();
             services.AddScoped<IBrandRepository, BrandRrepository>();
+            services.AddScoped<IProductRepository, ProductRepository>();
             return services;
         }
     }

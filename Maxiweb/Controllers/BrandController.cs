@@ -6,7 +6,7 @@ using Maxi.Application.Services.Interface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
-
+using Maxi.Application.Exceptions;
 namespace Maxiweb.Controllers
 {
     [Route("api/[controller]")]
@@ -96,6 +96,13 @@ namespace Maxiweb.Controllers
                 _apiResponse.DisplayMessage = CommonMessage.CreateOperationSuccess;
                 _apiResponse.IsSuccess = true;
                 _apiResponse.Result = data;
+            }
+            catch(BadRequestException ex)
+            {
+                _apiResponse.StatusCode = HttpStatusCode.InternalServerError;
+                _apiResponse.AddError(CommonMessage.SystemErr);
+                _apiResponse.Result = ex.Errors;
+
             }
             catch (Exception)
             {

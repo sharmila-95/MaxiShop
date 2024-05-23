@@ -42,8 +42,6 @@ namespace Maxiweb.Controllers
 
             }
 
-
-
             return Ok(_apiResponse);
         }
 

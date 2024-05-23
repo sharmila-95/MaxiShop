@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Maxi.Application.DTO.Brand;
 using Maxi.Application.DTO.Category;
+using Maxi.Application.Exceptions;
 using Maxi.Domain;
 using Maxi.Domain.Contracts;
 using System;
@@ -23,6 +24,12 @@ namespace Maxi.Application.Services.Interface
         }
         public async Task<BrandDto> CreateAsync(CreateBrandDto createbrandDto)
         {
+            var validator = new CreateBrandDtoValidator();
+            var validation_result=validator.Validate(createbrandDto);
+            if(validation_result.Errors.Any()) 
+            {
+                throw new BadRequestException("Invalid input",validation_result);
+            }
             var brand = _mapper.Map<Brand>(createbrandDto);
             var data = await _brandRepository.CreateAsync(brand);
             var entity = _mapper.Map<BrandDto>(data);

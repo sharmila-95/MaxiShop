@@ -4,6 +4,9 @@ using Maxi.Application;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Maxi.Infrastructure.Common;
+using Maxiweb.Middleware;
+using Microsoft.AspNetCore.Identity;
+using Maxi.Application.Common;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,6 +32,8 @@ builder.Services.AddCors(Options=>
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer
 (builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddIdentity<ApplicationUser,IdentityRole>(options =>
+{ }).AddEntityFrameworkStores<ApplicationDbContext>();
 //updata database async
 
 static async void UpdateDatabaseAsync(IHost host)
@@ -58,7 +63,12 @@ static async void UpdateDatabaseAsync(IHost host)
 }
 
 var app = builder.Build();
+
+app.UseMiddleware <ExceptionMiddleware>();
 UpdateDatabaseAsync(app);
+
+var ServiceProvider = app.Services;
+await SeedData.SeedRoles(ServiceProvider);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
